@@ -1,6 +1,6 @@
 {
   "name": "claude-init",
-  "version": "2026.9.23",
+  "version": "1.0.0",
   "description": "README.md 를 단일 기준으로 Claude Code plugin 세팅을 재현한다. global-init 은 user scope 를 전부 갈아엎고 다시 깔고, project-init 은 프로젝트에 필요한 것만 올린다.",
   "author": {
     "name": "zkfmapf123",
@@ -9,5 +9,13 @@
   "homepage": "https://github.com/zkfmapf123/claude-init",
   "repository": "https://github.com/zkfmapf123/claude-init",
   "license": "MIT",
-  "keywords": ["setup", "bootstrap", "plugins", "marketplace", "dotfiles", "global", "project"]
+  "keywords": [
+    "setup",
+    "bootstrap",
+    "plugins",
+    "marketplace",
+    "dotfiles",
+    "global",
+    "project"
+  ]
 }
