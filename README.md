@@ -66,6 +66,18 @@ claude plugin install okf-knowledge-base@okf
 claude plugin install common@common
 ```
 
+### npx skills 설치
+
+`claude plugin` 계열이 아니라 `npx skills` 로 붙는 스킬. 마켓플레이스 teardown 대상이 아니다.
+
+```bash
+npx -y skills add vercel-labs/skills --skill find-skills --agent claude-code
+```
+
+| 스킬          | 출처                                                                    | 내용                          |
+| ------------- | ----------------------------------------------------------------------- | ----------------------------- |
+| `find-skills` | [vercel-labs/skills](https://github.com/vercel-labs/skills)             | 설치된 스킬 검색 / 추천       |
+
 ### 목록
 
 | plugin                 | marketplace               | 저장소                                                                          | 내용                                                               |

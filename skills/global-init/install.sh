@@ -34,6 +34,12 @@ while IFS= read -r line; do
 done < <(awk '/^## global/{f=1;next} /^## /{f=0} f && /^claude plugin /' "$README")
 [ ${#CMDS[@]} -gt 0 ] || { echo "README ## global 에서 claude plugin 명령을 찾지 못함" >&2; exit 1; }
 
+# npx skills 계열은 marketplace 관리 밖이라 별도로 모은다.
+NPX_CMDS=()
+while IFS= read -r line; do
+  [ -n "$line" ] && NPX_CMDS+=("$line")
+done < <(awk '/^## global/{f=1;next} /^## /{f=0} f && /^npx .* skills add /' "$README")
+
 WANT_IDS=()
 while IFS= read -r id; do
   [ -n "$id" ] && WANT_IDS+=("$id")
@@ -109,6 +115,17 @@ for cmd in "${CMDS[@]}"; do
   esac
 done
 set +f
+
+# --- 4b. npx skills ---------------------------------------------------------
+if [ ${#NPX_CMDS[@]} -gt 0 ]; then
+  echo "== npx skills =="
+  set -f
+  for cmd in "${NPX_CMDS[@]}"; do
+    echo "++ $cmd"
+    $cmd || echo "   (실패, 계속)"
+  done
+  set +f
+fi
 
 # --- 5. 최신화 --------------------------------------------------------------
 # 방금 설치했다면 no-op. 재실행 시 의미가 있다.

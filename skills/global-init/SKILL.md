@@ -20,9 +20,10 @@ bash "${CLAUDE_PLUGIN_ROOT:-.}/skills/global-init/install.sh"
 1. **백업** — `~/.claude/global-init-backup-<타임스탬프>/` 에 plugin·marketplace 목록, `settings.json`, 기존 `CLAUDE.md` 저장
 2. **제거** — user scope plugin 전부 → user scope marketplace 전부 (순서 반대면 참조가 끊긴다)
 3. **설치** — `README.md` `## global` 의 `claude plugin ...` 줄을 적힌 순서대로 실행 (`install` 에는 `-y` 부착)
-4. **최신화** — `marketplace update` 전체 + 각 plugin `update`. 첫 설치면 no-op, 재실행 시 의미가 있다
-5. **CLAUDE.md** — `CLAUDE.global.md` 를 `~/.claude/CLAUDE.md` 로 복사
-6. **검증** — 목표 id 가 전부 `enabled` 이고 `errors` 없는지, 목록 밖 항목이 남지 않았는지 대조
+4. **npx skills** — `## global` 의 `npx ... skills add` 줄 실행 (`find-skills` 등). 제거 대상이 아니라 매번 덮어쓴다
+5. **최신화** — `marketplace update` 전체 + 각 plugin `update`. 첫 설치면 no-op, 재실행 시 의미가 있다
+6. **CLAUDE.md** — `CLAUDE.global.md` 를 `~/.claude/CLAUDE.md` 로 복사
+7. **검증** — 목표 id 가 전부 `enabled` 이고 `errors` 없는지, 목록 밖 항목이 남지 않았는지 대조
 
 ## 주의
 
@@ -38,7 +39,7 @@ bash "${CLAUDE_PLUGIN_ROOT:-.}/skills/global-init/install.sh"
 ## README 를 고쳤다면
 
 스크립트는 README 를 파싱한다. 목록을 바꾸면 스크립트 수정 없이 그대로 반영된다.
-단 `## global` 안의 명령은 `claude plugin` 으로 시작해야 하고, `marketplace add` 가 `install` 보다 먼저 와야 한다.
+단 `## global` 안의 명령은 `claude plugin` 또는 `npx ... skills add` 로 시작해야 하고, `marketplace add` 가 `install` 보다 먼저 와야 한다.
 
 ## 실패 시
 
