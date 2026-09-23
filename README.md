@@ -102,7 +102,7 @@ cp CLAUDE.global.md ~/.claude/CLAUDE.md
 ### eli5
 
 ```bash
-claude plugin marketplace add anthropics/claude-plugins-community
+claude plugin marketplace add anthropics/claude-plugins-community --scope project
 claude plugin install eli5@claude-community --scope project
 ```
 
@@ -111,9 +111,10 @@ claude plugin install eli5@claude-community --scope project
 공식 마켓플레이스에 있어 별도 등록 불필요. **Node 22+ 와 FFmpeg 선행 필요.**
 
 ```bash
-ffmpeg -version
 claude plugin install hyperframes@claude-plugins-official --scope project
 ```
+
+> `ffmpeg` 또는 `node` 22+ 가 없으면 `project-init` 이 이 줄을 건너뛴다. 설치돼도 렌더링에서 실패하기 때문이다.
 
 ### Taste (웹 디자인)
 
@@ -121,10 +122,9 @@ plugin 이 아니라 `npx skills` 계열이라 설치 방식이 다르다.
 
 ```bash
 npx skills add https://github.com/Leonxlnx/taste-skill
-
-# 단일 스킬만
-npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"
 ```
+
+> 단일 스킬만 원하면 `--skill "design-taste-frontend"` 를 붙인다. 이 변형은 자동 설치 대상이 아니다.
 
 ### okf 자동 검색 hook
 
