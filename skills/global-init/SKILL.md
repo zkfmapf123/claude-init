@@ -5,13 +5,15 @@ description: README.md 의 global 목록을 user scope 로 설치한다. 새 머
 
 # global-init
 
-`README.md` 의 `## global` 섹션이 단일 기준이다. 거기 적히지 않은 user scope plugin / marketplace 는 전부 제거한다.
+이 플러그인의 `README.md` `## global` 섹션이 단일 기준이다. 거기 적히지 않은 user scope plugin / marketplace 는 전부 제거한다.
 
 ## 실행
 
 ```bash
-bash .claude/skills/global-init/install.sh
+bash "${CLAUDE_PLUGIN_ROOT:-.}/skills/global-init/install.sh"
 ```
+
+플러그인으로 설치했다면 `CLAUDE_PLUGIN_ROOT` 가 잡혀 있다. 저장소를 직접 클론해 쓰는 경우 그 루트에서 `bash skills/global-init/install.sh`.
 
 ## 동작
 

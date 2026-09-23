@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-init",
+  "description": "새 머신에서 Claude Code plugin 세팅을 한 번에 재현하는 스킬. README.md 가 곧 설치 목록이다.",
+  "owner": {
+    "name": "dong"
+  },
+  "plugins": [
+    {
+      "name": "claude-init",
+      "description": "global-init / project-init. README.md 의 목록대로 plugin 과 marketplace 를 설치하고 검증한다.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
