@@ -15,6 +15,18 @@ for bin in claude python3; do
 done
 [ -f "$README" ] || { echo "README.md 없음: $README" >&2; exit 1; }
 
+# 자기 자신(claude-init)은 teardown 대상에서 뺀다.
+# 안 그러면 실행 중인 스크립트가 든 플러그인을 스스로 지우고, README 목록에 없으니 복구도 안 된다.
+SELF_PLUGIN=""
+SELF_MARKET=""
+if [ -f "$REPO/.claude-plugin/plugin.json" ]; then
+  SELF_PLUGIN="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("name",""))' "$REPO/.claude-plugin/plugin.json")"
+fi
+if [ -f "$REPO/.claude-plugin/marketplace.json" ]; then
+  SELF_MARKET="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("name",""))' "$REPO/.claude-plugin/marketplace.json")"
+fi
+[ -n "$SELF_PLUGIN" ] && echo "== 보호: plugin '$SELF_PLUGIN' / marketplace '$SELF_MARKET' 는 제거하지 않는다 =="
+
 # --- 1. README ## global 섹션에서 명령 추출 ---------------------------------
 CMDS=()
 while IFS= read -r line; do
@@ -52,6 +64,10 @@ for p in json.load(open(sys.argv[1])):
 
 if [ ${#OLD_PLUGINS[@]} -gt 0 ]; then
   for id in "${OLD_PLUGINS[@]}"; do
+    if [ -n "$SELF_PLUGIN" ] && [ "${id%%@*}" = "$SELF_PLUGIN" ]; then
+      echo "== skip  $id  (자기 자신)"
+      continue
+    fi
     echo "-- uninstall $id"
     claude plugin uninstall "$id" --scope user -y || echo "   (실패, 계속)"
   done
@@ -72,6 +88,10 @@ if os.path.exists(p):
 
 if [ ${#OLD_MPS[@]} -gt 0 ]; then
   for mp in "${OLD_MPS[@]}"; do
+    if [ -n "$SELF_MARKET" ] && [ "$mp" = "$SELF_MARKET" ]; then
+      echo "== skip  $mp  (자기 자신)"
+      continue
+    fi
     echo "-- marketplace remove $mp"
     claude plugin marketplace remove "$mp" --scope user || echo "   (실패, 계속)"
   done
@@ -112,11 +132,11 @@ echo "== 검증 =="
 claude plugin list --json             > "$BACKUP/plugins-after.json"
 claude plugin marketplace list --json > "$BACKUP/marketplaces-after.json"
 
-if python3 - "$BACKUP/plugins-after.json" "$BACKUP/marketplaces-after.json" "${WANT_IDS[@]}" <<'PY'
+if python3 - "$BACKUP/plugins-after.json" "$BACKUP/marketplaces-after.json" "$SELF_PLUGIN" "${WANT_IDS[@]}" <<'PY'
 import json, sys
 
-plugins_file, markets_file = sys.argv[1], sys.argv[2]
-want = sys.argv[3:]
+plugins_file, markets_file, self_plugin = sys.argv[1], sys.argv[2], sys.argv[3]
+want = sys.argv[4:]
 
 after = {p["id"]: p for p in json.load(open(plugins_file)) if p.get("scope") == "user"}
 markets = {m["name"]: m for m in json.load(open(markets_file))}
@@ -141,9 +161,10 @@ for name in sorted({i.split("@")[1] for i in want if "@" in i}):
     elif m.get("source") == "directory":
         print(f"  LOCAL-DIR {name} -> {m.get('path')}  (다른 머신에서 깨진다)"); bad = 1
 
-# 목록 밖 잔여물. 의존성으로 딸려온 것일 수 있어 경고로만 둔다.
+# 목록 밖 잔여물. 자기 자신과 의존성은 정상이므로 경고로만 둔다.
 for i in sorted(k for k in after if k not in want):
-    print(f"  extra?    {i}  (의존성이면 정상, 아니면 uninstall)")
+    tag = "자기 자신" if i.split("@")[0] == self_plugin else "의존성이면 정상, 아니면 uninstall"
+    print(f"  extra?    {i}  ({tag})")
 
 sys.exit(bad)
 PY
