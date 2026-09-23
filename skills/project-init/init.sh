@@ -82,20 +82,22 @@ if command -v node >/dev/null; then
   case "$(node -v)" in v2[2-9]*|v[3-9][0-9]*) NODE_OK=1 ;; esac
 fi
 
-SKIPPED=()   # 선행 조건 미충족 — 정상
 FAILED=()    # 실제 실패 — 비정상
+# 없어도 설치는 시도한다. 무엇이 왜 막히는지만 먼저 알린다.
+HAS_LFS=0
+command -v git-lfs >/dev/null && HAS_LFS=1
+if [ "$HAS_LFS" -eq 0 ]; then
+  echo "!! git-lfs 없음 — hyperframes 저장소가 LFS 를 쓰므로 설치가 실패한다."
+  echo "   brew install git-lfs && git lfs install"
+fi
+if [ "$HAS_FFMPEG" -eq 0 ] || [ "$NODE_OK" -eq 0 ]; then
+  echo "!! ffmpeg=$HAS_FFMPEG node22+=$NODE_OK — hyperframes 는 설치돼도 렌더링에서 실패한다."
+  echo "   brew install ffmpeg"
+fi
+
 echo "== 설치 =="
 set -f
 for cmd in "${CMDS[@]}"; do
-  # hyperframes 는 ffmpeg + node 22+ 가 없으면 설치해도 렌더링에서 실패한다.
-  case "$cmd" in
-    *hyperframes*)
-      if [ "$HAS_FFMPEG" -eq 0 ] || [ "$NODE_OK" -eq 0 ]; then
-        echo "== skip  hyperframes (ffmpeg=$HAS_FFMPEG node22+=$NODE_OK)"
-        SKIPPED+=("hyperframes")
-        continue
-      fi ;;
-  esac
   # 둘 다 확인 프롬프트가 있다. -y 로 넘기고, 그래도 뭔가 물으면
   # </dev/null 로 즉시 실패시킨다 — 비대화형에서 멈추는 것보다 낫다.
   case "$cmd" in
@@ -167,7 +169,7 @@ rows = {p["id"]: p for p in json.load(open(state))
 
 for i in want:
     p = rows.get(i)
-    if p is None:                 print(f"  없음      {i}  (선행 조건으로 건너뛰었거나 설치 실패)")
+    if p is None:                 print(f"  없음      {i}  (설치 실패)")
     elif p.get("errors"):         print(f"  ERROR    {i}  {p['errors']}")
     elif not p.get("enabled"):    print(f"  DISABLED {i}")
     else:                         print(f"  ok       {i}")
@@ -181,14 +183,10 @@ done
 [ -f "$DOT/CLAUDE.md" ]     && echo "  ok       .claude/CLAUDE.md"
 [ -f "$DOT/settings.json" ] && echo "  ok       .claude/settings.json"
 
-if [ ${#SKIPPED[@]} -gt 0 ]; then
-  echo "== 건너뜀 (선행 조건 미충족 — 정상) =="
-  printf '   %s\n' "${SKIPPED[@]}"
-fi
-
 if [ ${#FAILED[@]} -gt 0 ]; then
   echo "== 실패 ==" >&2
   printf '   %s\n' "${FAILED[@]}" >&2
+  [ "$HAS_LFS" -eq 0 ] && echo "   (hyperframes 가 여기 있다면 git-lfs 부터 설치할 것)" >&2
   exit 1
 fi
 echo "== 완료. Claude Code 재시작 후 반영된다. =="
