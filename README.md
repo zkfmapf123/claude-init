@@ -168,16 +168,3 @@ npx skills add https://github.com/Leonxlnx/taste-skill
 claude plugin list --json      # id, scope, enabled
 claude plugin marketplace list --json
 ```
-
-## status line 에 토큰 확인 추가
-
-```sh
-~/.claude/settings.json 의 statusLine 에 컨텍스트 토큰 표시를 추가해줘.
-- 기존 statusLine 이 있으면 그 출력은 유지하고 뒤에 덧붙일 것.
-- ~/.claude/statusline.sh 를 만들어서 stdin JSON 의 transcript_path 가 가리키는 jsonl 에서
-  마지막 assistant 메시지의 usage (input_tokens + cache_read_input_tokens +
-  cache_creation_input_tokens) 합계를 계산.
-- 200000 초과면 빨간색 "ctx 212k ⚠", 이하면 초록색 "ctx 150k".
-- 설정 후 실제 transcript 파일로 스크립트를 직접 실행해서 출력까지 검증하고 보고할 것.
-- 다른 설정 키는 건드리지 말 것.
-```
